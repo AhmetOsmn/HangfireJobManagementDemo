@@ -15,18 +15,12 @@ namespace HangfireJobManagementDemo.Services.Concrete
             switch (jobViewModel.Type)
             {
                 case "MessagePrinter":
-                    //var newJob = Job.FromExpression<MessagePrinterJob>(x => x.DeclareJob(new DeclareJobParameters(jobViewModel.Name, jobViewModel.Parameters)));
-                    //_backgroundJobClient.Create(newJob, new CreatedState());
-
                     RecurringJob.AddOrUpdate<MessagePrinterJob>(jobViewModel.Name, x => x.Run(jobViewModel.Parameters), Cron.Never());
-
-
                     break;
 
                 default:
                     break;
             }
-
         }
 
         public void Delete(string id)
@@ -43,25 +37,37 @@ namespace HangfireJobManagementDemo.Services.Concrete
 
             foreach (var item in recurringJobs)
             {
-                var argsArray = item.Job.Arguments;
+                var parameters = GetRecurringJobParameters<MessagePrinterParameters>(item.Id);
 
-                foreach (var arg in argsArray)
-                {
-                    var temp = JsonSerializer.Deserialize<MessagePrinterParameters>(arg);
-                    customJobs.Add(new() { Name = item.Id, Type = item.Job.Type.Name, CreatedBy = temp.CreatedBy, Text = temp.Text });
-                }
+                customJobs.Add(new() { Name = item.Id, Type = item.Job.Type.Name, CreatedBy = parameters.CreatedBy, Text = parameters.Text });
             }
-
 
             return customJobs;
         }
 
-        public void Schedule(string jobId, string cron)
+        public void Schedule(string jobId, string cronExpression)
+        {
+            var oldParameters = GetRecurringJobParameters<MessagePrinterParameters>(jobId);
+
+            RecurringJob.AddOrUpdate<MessagePrinterJob>(jobId, x => x.Run(oldParameters), cronExpression);
+        }
+
+        private T GetRecurringJobParameters<T>(string jobId) where T : class
         {
             using var hangfireConnection = JobStorage.Current.GetConnection();
 
-            var temp1 = hangfireConnection.GetJobData(jobId);
-            var temp2 = hangfireConnection.GetRecurringJobs(new List<string> { jobId }).FirstOrDefault();
+            var selectedJob = hangfireConnection.GetRecurringJobs(new List<string> { jobId }).FirstOrDefault();
+
+            ArgumentNullException.ThrowIfNull(selectedJob);
+
+            var parametersAsJson = JsonSerializer.Serialize(selectedJob.Job.Args.FirstOrDefault());
+
+            var parameters = JsonSerializer.Deserialize<T>(parametersAsJson);
+
+            ArgumentNullException.ThrowIfNull(parameters);
+
+            return parameters;
         }
+
     }
 }

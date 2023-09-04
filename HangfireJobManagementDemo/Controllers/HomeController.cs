@@ -1,4 +1,5 @@
-﻿using HangfireJobManagementDemo.HangfireJobs.JobParameters;
+﻿using Hangfire;
+using HangfireJobManagementDemo.HangfireJobs.JobParameters;
 using HangfireJobManagementDemo.Models;
 using HangfireJobManagementDemo.Services.Abstract;
 using Microsoft.AspNetCore.Mvc;
@@ -40,9 +41,9 @@ namespace HangfireJobManagementDemo.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        public IActionResult ScheduleCustomJob(string jobId)
+        public IActionResult ScheduleCustomJob(string jobId, string cronExpression)
         {
-            _jobService.Schedule(jobId, "0 12 * */2");
+            _jobService.Schedule(jobId, cronExpression);
             return RedirectToAction(nameof(Index));
         }
 

@@ -69,8 +69,8 @@
                         </select>
                     </div>
                     <div class="input-group mb-3">
-                        <span class="input-group-text">Minute</span>
-                        <input type="number" name="minute" class="form-control" placeholder="Message" aria-describedby="basic-addon1">
+                        <span class="input-group-text" id="basic-addon1">Cron Expression</span>
+                        <input type="text" name="cronExpression" class="form-control" placeholder="Cron Expression" aria-describedby="basic-addon1">
                     </div>
                     <button class="btn btn-primary" type="submit">Save</button>
                 </form>
@@ -112,6 +112,9 @@
         <thead>
             <tr>
                 <th scope="col">Job Name</th>
+                <th scope="col">Type</th>
+                <th scope="col">Text</th>
+                <th scope="col">Created By</th>
                 <th scope="col"></th>
             </tr>
         </thead>
@@ -120,6 +123,9 @@
             {
                 <tr>
                     <td>@item.Name</td>
+                    <td>@item.Type</td>
+                    <td>@item.Text</td>
+                    <td>@item.CreatedBy</td>
                     <td><a class="btn btn-danger" asp-controller="Home" asp-action="DeleteJob" asp-route-id="@item.Name">Sil</a></td>
                 </tr>
 
