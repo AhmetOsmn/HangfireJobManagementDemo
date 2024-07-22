@@ -54,6 +54,12 @@ namespace HangfireJobManagementDemo
 
             app.UseAuthorization();
 
+            using (var scope = app.Services.CreateScope())
+            {
+                var dbContext = scope.ServiceProvider.GetRequiredService<JobDemoContext>();
+                dbContext.Database.Migrate();
+            }
+
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");

@@ -13,9 +13,9 @@ namespace HangfireJobManagementDemo.Services.Concrete
             _dbContext = dbContext;
         }
 
-        public void Add(string text, DateTime createdDate, string createdBy)
+        public void Add(string text, DateTime? jobCreatedDate, string createdBy)
         {
-            _dbContext.Add(new Message { Text = text, CreatedBy = createdBy, CreatedDate = createdDate });
+            _dbContext.Add(new Message { Text = text, CreatedBy = createdBy, JobCreatedDate = jobCreatedDate, CreatedDate = DateTime.Now });
             _dbContext.SaveChanges();
         }
 

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace HangfireJobManagementDemo.Migrations
 {
     [DbContext(typeof(JobDemoContext))]
-    [Migration("20230901130541_mig_2")]
-    partial class mig_2
+    [Migration("20240722132202_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -38,6 +38,9 @@ namespace HangfireJobManagementDemo.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("JobCreatedDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Text")

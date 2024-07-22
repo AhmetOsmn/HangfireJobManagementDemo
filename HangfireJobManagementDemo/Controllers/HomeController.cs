@@ -20,49 +20,99 @@ namespace HangfireJobManagementDemo.Controllers
 
         public IActionResult Index()
         {
-            return View(new IndexViewModel() { Messages = _messageService.GetAll(), CustomJobs = _jobService.GetAll() });
+            try
+            {
+                var messages = _messageService.GetAll();
+                var jobs = _jobService.GetAll();
+                var customJobSchedules = _jobService.GetJobSchedules();
+
+                return View(new IndexViewModel() { Messages = messages, CustomJobs = jobs, CustomJobSchedules = customJobSchedules });
+
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+                return View(new IndexViewModel() { CustomJobs = new(), Messages = new() });
+            }
         }
 
         public IActionResult SaveCustomJob(SaveJobRequestModel saveJobRequestModel)
         {
 
-            _jobService.Add(new JobViewModel()
+            try
             {
-                Name = saveJobRequestModel.JobName,
-                Type = saveJobRequestModel.JobType,
-                Parameters = new MessagePrinterParameters()
+                _jobService.Add(new JobViewModel()
                 {
-                    Text = saveJobRequestModel.MessageText,
-                    CreatedBy = saveJobRequestModel.CreatedBy,
-                    CreatedDate = saveJobRequestModel.CreatedDate
-                }
-            });
+                    Name = saveJobRequestModel.JobName,
+                    Type = saveJobRequestModel.JobType,
+                    Parameters = new MessagePrinterParameters()
+                    {
+                        Text = saveJobRequestModel.MessageText,
+                        CreatedBy = saveJobRequestModel.CreatedBy,
+                        CreatedDate = saveJobRequestModel.CreatedDate
+                    }
+                });
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+            }
 
             return RedirectToAction(nameof(Index));
         }
 
         public IActionResult ScheduleCustomJob(string jobId, string cronExpression)
         {
-            _jobService.Schedule(jobId, cronExpression);
+            try
+            {
+                _jobService.Schedule(jobId, cronExpression);
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+            }
             return RedirectToAction(nameof(Index));
         }
 
         public IActionResult DeleteJob(string id)
         {
-            _jobService.Delete(id);
+            try
+            {
+                _jobService.Delete(id);
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+            }
             return RedirectToAction(nameof(Index));
         }
 
         public IActionResult DeleteMessage(int id)
         {
-            _messageService.Delete(id);
+            try
+            {
+                _messageService.Delete(id);
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+            }
             return RedirectToAction(nameof(Index));
         }
 
-        public IActionResult DeleteJobSchedule(int id)
+        public IActionResult DeleteJobSchedule(string id)
         {
+            try
+            {
+                _jobService.DeleteJobSchedule(id);
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = ex.Message;
+            }
             return RedirectToAction(nameof(Index));
         }
+
 
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

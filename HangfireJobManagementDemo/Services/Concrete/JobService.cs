@@ -28,6 +28,8 @@ namespace HangfireJobManagementDemo.Services.Concrete
             RecurringJob.RemoveIfExists(id);
         }
 
+        public void DeleteJobSchedule(string id) => Schedule(id,Cron.Never());
+
         public List<CustomJob> GetAll()
         {
             using var hangfireConnection = JobStorage.Current.GetConnection();
@@ -43,6 +45,35 @@ namespace HangfireJobManagementDemo.Services.Concrete
             }
 
             return customJobs;
+        }
+
+        public List<CustomJobSchedule> GetJobSchedules()
+        {
+            using var hangfireConnection = JobStorage.Current.GetConnection();
+
+            var recurringJobs = hangfireConnection.GetRecurringJobs();
+
+            List<string> customJobIds = new();
+
+            foreach (var item in recurringJobs)
+            {
+                customJobIds.Add(item.Id);
+            }
+
+            List<CustomJobSchedule> customJobSchedules = new();
+
+            foreach (var id in customJobIds)
+            {
+                var entries = hangfireConnection.GetAllEntriesFromHash($"recurring-job:{id}");
+                var cronValue = entries["Cron"];
+                if (cronValue != Cron.Never())
+                {
+                    customJobSchedules.Add(new() { Id = id, CRON = cronValue });
+                }
+            }
+
+
+            return customJobSchedules;
         }
 
         public void Schedule(string jobId, string cronExpression)

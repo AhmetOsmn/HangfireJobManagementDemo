@@ -5,6 +5,13 @@
 @model IndexViewModel
 
 <a class="btn btn-info mb-4" href="/hangfire">JOBS</a>
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger" role="alert">
+        @TempData["Error"]
+    </div>
+
+}
 <div class="accordion mb-2" id="accordionExample">
     <div class="accordion-item">
         <h2 class="accordion-header">
@@ -80,7 +87,7 @@
 
 </div>
 
-<div class="p-2 border mb-2">
+<div class="p-2 border mb-2" style="height: 400px; overflow-y: auto;">
     <h1>Messages</h1>
     <table class="table">
         <thead>
@@ -106,7 +113,7 @@
         </tbody>
     </table>
 </div>
-<div class="p-2 border  mb-2">
+<div class="p-2 border  mb-2" style="height: 400px; overflow-y: auto;">
     <h1>Custom Jobs</h1>
     <table class="table">
         <thead>
@@ -133,28 +140,26 @@
         </tbody>
     </table>
 </div>
-<div class="p-2 border">
+<div class="p-2 border" style="height: 400px; overflow-y: auto;">
     <h1>Custom Job Schedules</h1>
     <table class="table">
         <thead>
             <tr>
-                <th scope="col">#</th>
                 <th scope="col">Job Name</th>
-                <th scope="col">Minute</th>
+                <th scope="col">CRON</th>
                 <th scope="col"></th>
             </tr>
         </thead>
         <tbody>
-            @*@foreach (var item in Model.CustomJobSchedules)
-            {
-                <tr>
-                    <th scope="row">@item.Id</th>
-                    <td>@item.CustomJob.JobName</td>
-                    <td>@item.Minute</td>
-                    <td><a class="btn btn-danger" asp-controller="Home" asp-action="DeleteJobSchedule" asp-route-id="@item.Id">Sil</a></td>
-                </tr>
+            @foreach (var item in Model.CustomJobSchedules)
+                {
+                    <tr>
+                        <th scope="row">@item.Id</th>
+                        <td>@item.CRON</td>
+                        <td><a class="btn btn-danger" asp-controller="Home" asp-action="DeleteJobSchedule" asp-route-id="@item.Id">Sil</a></td>
+                    </tr>
 
-            }*@
+                }
         </tbody>
     </table>
 </div>
